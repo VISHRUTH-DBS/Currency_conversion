@@ -1,0 +1,460 @@
+from flask import Flask, render_template
+
+app = Flask(__name__)
+
+@app.route('/')  
+def home():
+    return """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Currency Converter</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #2c3e50; 
+        color: #fff; 
+    }
+
+    .container {
+        max-width: 600px;
+        margin: 50px auto;
+        background-color: #34495e; 
+        padding: 20px;
+        border-radius: 10px;
+
+    }
+
+    .container:hover{
+        box-shadow: 0 0 10px rgba(51, 195, 51, 0.333),
+                    0 0 20px rgba(51, 195, 51, 0.333),
+                    0 0 40px rgba(51, 195, 51, 0.333),
+                    0 0 80px rgba(51, 195, 51, 0.333),
+                    0 0 120px rgba(51, 195, 51, 0.333),
+                    0 0 140px rgba(51, 195, 51, 0.333);
+    }
+
+    h2 {
+        text-align: center;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    input[type="number"] {
+        width: 96%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #2c3e50; 
+        color: #fff; 
+    }
+
+    select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #2c3e50; 
+        color: #fff; 
+    }
+
+    button {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        background-color: #3498db; 
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.3s;
+    }
+
+    button:hover {
+        background-color: orange; 
+        transform: scale(1.05); 
+    }
+
+    #result {
+        margin-top: 20px;
+        text-align: center;
+        font-size: 1.5em;
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <h2>Currency Converter</h2>
+        <label for="value">Amount in Indian Rupees (INR):</label>
+        <input type="number" id="value" placeholder="Enter amount">
+        <label for="to">Convert to:</label>
+        <select id="to">
+            <option value="AED">United Arab Emirates dirham (AED) - د.إ</option>
+            <option value="AFN">Afghan afghani (AFN) - ؋</option>
+            <option value="ALL">Albanian lek (ALL) - Lek</option>
+            <option value="AMD">Armenian dram (AMD) - ֏</option>
+            <option value="ANG">Netherlands Antillean guilder (ANG) - ƒ</option>
+            <option value="AOA">Angolan kwanza (AOA) - Kz</option>
+            <option value="ARS">Argentine peso (ARS) - $</option>
+            <option value="AUD">Australian dollar (AUD) - $</option>
+            <option value="AWG">Aruban florin (AWG) - ƒ</option>
+            <option value="AZN">Azerbaijani manat (AZN) - ₼</option>
+            <option value="BAM">Bosnia and Herzegovina convertible mark (BAM) - KM</option>
+            <option value="BBD">Barbadian dollar (BBD) - $</option>
+            <option value="BDT">Bangladeshi taka (BDT) - ৳</option>
+            <option value="BGN">Bulgarian lev (BGN) - Lev</option>
+            <option value="BHD">Bahraini dinar (BHD) - BD</option>
+            <option value="BIF">Burundian franc (BIF) - Fr</option>
+            <option value="BMD">Bermudian dollar (BMD) - $</option>
+            <option value="BND">Brunei dollar (BND) - $</option>
+            <option value="BOB">Bolivian boliviano (BOB) - Bs</option>
+            <option value="BRL">Brazilian real (BRL) - R$</option>
+            <option value="BSD">Bahamian dollar (BSD) - $</option>
+            <option value="BTN">Bhutanese ngultrum (BTN) - Nu</option>
+            <option value="BWP">Botswana pula (BWP) - P</option>
+            <option value="BYN">Belarusian ruble (BYN) - Br</option>
+            <option value="BZD">Belize dollar (BZD) - $</option>
+            <option value="CAD">Canadian dollar (CAD) - $</option>
+            <option value="CDF">Congolese franc (CDF) - Fr</option>
+            <option value="CHF">Swiss franc (CHF) - Fr</option>
+            <option value="CLP">Chilean peso (CLP) - $</option>
+            <option value="CNY">Renminbi (CNY) - ¥</option>
+            <option value="COP">Colombian peso (COP) - $</option>
+            <option value="CRC">Costa Rican colón (CRC) - ₡</option>
+            <option value="CUP">Cuban peso (CUP) - $</option>
+            <option value="CVE">Cape Verdean escudo (CVE) - $</option>
+            <option value="CZK">Czech koruna (CZK) - Kč</option>
+            <option value="DJF">Djiboutian franc (DJF) - Fr</option>
+            <option value="DKK">Danish krone (DKK) - kr</option>
+            <option value="DOP">Dominican peso (DOP) - $</option>
+            <option value="DZD">Algerian dinar (DZD) - DA</option>
+            <option value="EGP">Egyptian pound (EGP) - LE</option>
+            <option value="ERN">Eritrean nakfa (ERN) - Nkf</option>
+            <option value="ETB">Ethiopian birr (ETB) - Br</option>
+            <option value="EUR">Euro (EUR) - €</option>
+            <option value="FJD">Fijian dollar (FJD) - $</option>
+            <option value="FKP">Falkland Islands pound (FKP) - £</option>
+            <option value="FOK">Falkland Islands pound (FOK) - £</option>
+            <option value="GBP">Sterling (GBP) - £</option>
+            <option value="GEL">Georgian lari (GEL) - ₾</option>
+            <option value="GGP">Guernsey pound (GGP) - £</option>
+            <option value="GHS">Ghanaian cedi (GHS) - ₵</option>
+            <option value="GIP">Gibraltar pound (GIP) - £</option>
+            <option value="GMD">Gambian dalasi (GMD) - D</option>
+            <option value="GNF">Guinean franc (GNF) - Fr</option>
+            <option value="GTQ">Guatemalan quetzal (GTQ) - Q</option>
+            <option value="GYD">Guyanese dollar (GYD) - $</option>
+            <option value="HKD">Hong Kong dollar (HKD) - $</option>
+            <option value="HNL">Honduran lempira (HNL) - L</option>
+            <option value="HRK">Croatian kuna (HRK) - kn</option>
+            <option value="HTG">Haitian gourde (HTG) - G</option>
+            <option value="HUF">Hungarian forint (HUF) - Ft</option>
+            <option value="IDR">Indonesian rupiah (IDR) - Rp</option>
+            <option value="ILS">Israeli new shekel (ILS) - ₪</option>
+            <option value="IMP">Manx pound (IMP) - £</option>
+            <option value="INR">Indian rupee (INR) - ₹</option>
+            <option value="IQD">Iraqi dinar (IQD) - ID</option>
+            <option value="IRR">Iranian rial (IRR) - Rl</option>
+            <option value="ISK">Icelandic króna (ISK) - kr</option>
+            <option value="JEP">Jersey pound (JEP) - £</option>
+            <option value="JMD">Jamaican dollar (JMD) - $</option>
+            <option value="JOD">Jordanian dinar (JOD) - JD</option>
+            <option value="JPY">Japanese yen (JPY) - ¥</option>
+            <option value="KES">Kenyan shilling (KES) - Sh</option>
+            <option value="KGS">Kyrgyzstani som (KGS) - som</option>
+            <option value="KHR">Cambodian riel (KHR) - ៛</option>
+            <option value="KID">Kiribati dollar (KID) - $</option>
+            <option value="KMF">Comorian franc (KMF) - Fr</option>
+            <option value="KRW">South Korean won (KRW) - ₩</option>
+            <option value="KWD">Kuwaiti dinar (KWD) - KD</option>
+            <option value="KYD">Cayman Islands dollar (KYD) - $</option>
+            <option value="KZT">Kazakhstani tenge (KZT) - ₸</option>
+            <option value="LAK">Lao kip (LAK) - ₭</option>
+            <option value="LBP">Lebanese pound (LBP) - LL</option>
+            <option value="LKR">Sri Lankan rupee (LKR) - ₨</option>
+            <option value="LRD">Liberian dollar (LRD) - $</option>
+            <option value="LSL">Lesotho loti (LSL) - L</option>
+            <option value="LYD">Libyan dinar (LYD) - LD</option>
+            <option value="MAD">Moroccan dirham (MAD) - DH</option>
+            <option value="MDL">Moldovan leu (MDL) - Leu</option>
+            <option value="MGA">Malagasy ariary (MGA) - Ar</option>
+            <option value="MKD">Macedonian denar (MKD) - DEN</option>
+            <option value="MMK">Burmese kyat (MMK) - K</option>
+            <option value="MNT">Mongolian tögrög (MNT) - ₮</option>
+            <option value="MOP">Macanese pataca (MOP) - MOP$</option>
+            <option value="MRO">Mauritanian ouguiya (MRO) - UM</option>
+            <option value="MUR">Mauritian rupee (MUR) - Rs</option>
+            <option value="MVR">Maldivian rufiyaa (MVR) - Rf</option>
+            <option value="MWK">Malawian kwacha (MWK) - K</option>
+            <option value="MXN">Mexican peso (MXN) - $</option>
+            <option value="MYR">Malaysian ringgit (MYR) - RM</option>
+            <option value="MZN">Mozambican metical (MZN) - Mt</option>
+            <option value="NAD">Namibian dollar (NAD) - $</option>
+            <option value="NGN">Nigerian naira (NGN) - ₦</option>
+            <option value="NIO">Nicaraguan córdoba (NIO) - C$</option>
+            <option value="NOK">Norwegian krone (NOK) - kr</option>
+            <option value="NPR">Nepalese rupee (NPR) - Rs</option>
+            <option value="NZD">New Zealand dollar (NZD) - $</option>
+            <option value="OMR">Omani rial (OMR) - RO</option>
+            <option value="PAB">Panamanian balboa (PAB) - B/</option>
+            <option value="PEN">Peruvian sol (PEN) - S/</option>
+            <option value="PGK">Papua New Guinean kina (PGK) - K</option>
+            <option value="PHP">Philippine peso (PHP) - ₱</option>
+            <option value="PKR">Pakistani rupee (PKR) - Rs</option>
+            <option value="PLN">Polish złoty (PLN) - zł</option>
+            <option value="PYG">Paraguayan guaraní (PYG) - ₲</option>
+            <option value="QAR">Qatari riyal (QAR) - QR</option>
+            <option value="RON">Romanian leu (RON) - Leu</option>
+            <option value="RSD">Serbian dinar (RSD) - din</option>
+            <option value="RUB">Russian ruble (RUB) - ₽</option>
+            <option value="RWF">Rwandan franc (RWF) - Fr</option>
+            <option value="SAR">Saudi riyal (SAR) - SR</option>
+            <option value="SBD">Solomon Islands dollar (SBD) - $</option>
+            <option value="SCR">Seychellois rupee (SCR) - Rs</option>
+            <option value="SDG">Sudanese pound (SDG) - SD</option>
+            <option value="SEK">Swedish krona (SEK) - kr</option>
+            <option value="SGD">Singapore dollar (SGD) - $</option>
+            <option value="SHP">Saint Helena pound (SHP) - £</option>
+            <option value="SLL">Sierra Leonean leone (SLL) - Le</option>
+            <option value="SOS">Somali shilling (SOS) - Sh</option>
+            <option value="SRD">Surinamese dollar (SRD) - $</option>
+            <option value="SSP">South Sudanese pound (SSP) - £</option>
+            <option value="STN">São Tomé and Príncipe dobra (STN) - Db</option>
+            <option value="SVC">Salvadoran colón (SVC) - $</option>
+            <option value="SYP">Syrian pound (SYP) - LS</option>
+            <option value="SZL">Swazi lilangeni (SZL) - L</option>
+            <option value="THB">Thai baht (THB) - ฿</option>
+            <option value="TJS">Tajikistani somoni (TJS) - ЅМ</option>
+            <option value="TMT">Turkmenistan manat (TMT) - T</option>
+            <option value="TND">Tunisian dinar (TND) - د.ت</option>
+            <option value="TOP">Tongan paʻanga (TOP) - T$</option>
+            <option value="TRY">Turkish lira (TRY) - ₺</option>
+            <option value="TTD">Trinidad and Tobago dollar (TTD) - $</option>
+            <option value="TVD">Tuvaluan dollar (TVD) - $</option>
+            <option value="TWD">New Taiwan dollar (TWD) - $</option>
+            <option value="TZS">Tanzanian shilling (TZS) - Sh</option>
+            <option value="UAH">Ukrainian hryvnia (UAH) - ₴</option>
+            <option value="UGX">Ugandan shilling (UGX) - Sh</option>
+            <option value="USD">United States dollar (USD) - $</option>
+            <option value="UYU">Uruguayan peso (UYU) - $</option>
+            <option value="UZS">Uzbekistan som (UZS) - soʻm</option>
+            <option value="VES">Venezuelan bolívar soberano (VES) - Bs.S.</option>
+            <option value="VND">Vietnamese đồng (VND) - ₫</option>
+            <option value="VUV">Vanuatu vatu (VUV) - Vt</option>
+            <option value="WST">Samoan tālā (WST) - T</option>
+            <option value="XAF">Central African CFA franc (XAF) - Fr</option>
+            <option value="XCD">Eastern Caribbean dollar (XCD) - $</option>
+            <option value="XDR">Special Drawing Rights (XDR) - SDR</option>
+            <option value="XOF">West African CFA franc (XOF) - Fr</option>
+            <option value="XPF">CFP franc (XPF) - Fr</option>
+            <option value="YER">Yemeni rial (YER) - ﷼</option>
+            <option value="ZAR">South African rand (ZAR) - R</option>
+            <option value="ZMW">Zambian kwacha (ZMW) - ZK</option>
+            <option value="ZWL">Zimbabwean dollar (2009) (ZWL) - $</option>
+        
+            
+
+        </select>
+        <button onclick="convert()">Convert</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function convert() {
+            var value = parseFloat(document.getElementById('value').value);
+            var to = document.getElementById('to').value;
+            var currencies = {
+
+
+AED: 0.048, // 1 INR = 0.048 United Arab Emirates dirham 
+  AFN: 1.8, // 1 INR = 1.8 Afghan afghani 
+  ALL: 0.76, // 1 INR = 0.76 Albanian lek 
+  AMD: 2.8, // 1 INR = 2.8 Armenian dram 
+  ANG: 0.024, // 1 INR = 0.024 Netherlands Antillean guilder 
+  AOA: 4.6, // 1 INR = 4.6 Angolan kwanza 
+  ARS: 0.68, // 1 INR = 0.68 Argentine peso 
+  AUD: 0.018, // 1 INR = 0.018 Australian dollar 
+  AWG: 0.024, // 1 INR = 0.024 Aruban florin 
+  AZN: 0.082, // 1 INR = 0.082 Azerbaijani manat 
+  BAM: 0.024, // 1 INR = 0.024 Bosnia and Herzegovina convertible mark 
+  BBD: 0.022, // 1 INR = 0.022 Barbadian dollar 
+  BDT: 1.3, // 1 INR = 1.3 Bangladeshi taka 
+  BGN: 0.012, // 1 INR = 0.012 Bulgarian lev 
+  BHD: 0.0057, // 1 INR = 0.0057 Bahraini dinar 
+  BIF: 14, // 1 INR = 14 Burundian franc 
+  BMD: 0.014, // 1 INR = 0.014 Bermudian dollar 
+  BND: 0.018, // 1 INR = 0.018 Brunei dollar 
+  BOB: 0.097, // 1 INR = 0.097 Bolivian boliviano 
+  BRL: 0.057, // 1 INR = 0.057 Brazilian real 
+  BSD: 0.014, // 1 INR = 0.014 Bahamian dollar 
+  BTN: 1, // 1 INR = 1 Bhutanese ngultrum 
+  BWP: 0.15, // 1 INR = 0.15 Botswana pula 
+  BYN: 0.039, // 1 INR = 0.039 Belarusian ruble 
+  BZD: 0.028, // 1 INR = 0.028 Belize dollar 
+  CAD: 0.017, // 1 INR = 0.017 Canadian dollar 
+  CDF: 28, // 1 INR = 28 Congolese franc 
+  CHF: 0.012, // 1 INR = 0.012 Swiss franc 
+  CLP: 10, // 1 INR = 10 Chilean peso 
+  CNY: 0.087, // 1 INR = 0.087 Renminbi 
+  COP: 48, // 1 INR = 48 Colombian peso 
+  CRC: 0.88, // 1 INR = 0.88 Costa Rican colón 
+  CUP: 0.35, // 1 INR = 0.35 Cuban peso 
+  CVE: 1.5, // 1 INR = 1.5 Cape Verdean escudo 
+  CZK: 0.32, // 1 INR = 0.32 Czech koruna 
+  DJF: 2.5, // 1 INR = 2.5 Djiboutian franc 
+  DKK: 0.086, // 1 INR = 0.086 Danish krone 
+  DOP: 0.78, // 1 INR = 0.78 Dominican peso 
+  DZD: 1.9, // 1 INR = 1.9 Algerian dinar 
+  EGP: 0.39, // 1 INR = 0.39 Egyptian pound 
+  ERN: 0.21, // 1 INR = 0.21 Eritrean nakfa 
+  ETB: 0.63, // 1 INR = 0.63 Ethiopian birr 
+  EUR: 0.012, // 1 INR = 0.012 Euro 
+  FJD: 0.029, // 1 INR = 0.029 Fijian dollar 
+  FKP: 0.0092, // 1 INR = 0.0092 Falkland Islands pound 
+  FOK: 0.0092, // 1 INR = 0.0092 Falkland Islands pound 
+  GBP: 0.0096, // 1 INR = 0.0096 Sterling 
+  GEL: 0.046, // 1 INR = 0.046 Georgian lari 
+  GGP: 0.0092, // 1 INR = 0.0092 Guernsey pound 
+  GHS: 0.085, // 1 INR = 0.085 Ghanaian cedi 
+  GIP: 0.0092, // 1 INR = 0.0092 Gibraltar pound 
+  GMD: 0.77, // 1 INR = 0.77 Gambian dalasi 
+  GNF: 130, // 1 INR = 130 Guinean franc 
+  GTQ: 0.11, // 1 INR = 0.11 Guatemalan quetzal 
+  GYD: 3.1, // 1 INR = 3.1 Guyanese dollar 
+  HKD: 0.098, // 1 INR = 0.098 Hong Kong dollar 
+
+  HNL: 0.34, // 1 INR = 0.34 Honduran lempira 
+  HRK: 0.088, // 1 INR = 0.088 Croatian kuna 
+  HTG: 1.5, // 1 INR = 1.5 Haitian gourde 
+  HUF: 3.6, // 1 INR = 3.6 Hungarian forint 
+  IDR: 243, // 1 INR = 243 Indonesian rupiah 
+  ILS: 0.052, // 1 INR = 0.052 Israeli new shekel 
+  IMP: 0.0092, // 1 INR = 0.0092 Manx pound 
+  INR: 1, // 1 INR = 1 Indian rupee 
+  IQD: 2.1, // 1 INR = 2.1 Iraqi dinar 
+  IRR: 369, // 1 INR = 369 Iranian rial 
+  ISK: 1.8, // 1 INR = 1.8 Icelandic króna 
+  JEP: 0.0092, // 1 INR = 0.0092 Jersey pound 
+  JMD: 2.1, // 1 INR = 2.1 Jamaican dollar 
+  JOD: 0.011, // 1 INR = 0.011 Jordanian dinar 
+  JPY: 1.46, // 1 INR = 1.46 Japanese yen 
+  KES: 1.7, // 1 INR = 1.7 Kenyan shilling 
+
+  KGS: 1.5, // 1 INR = 1.5 Kyrgyzstani som 
+  KHR: 57, // 1 INR = 57 Cambodian riel 
+  KID: 0.019, // 1 INR = 0.019 Kiribati dollar 
+
+  KMF: 6, // 1 INR = 6 Comorian franc 
+  KRW: 17, // 1 INR = 17 South Korean won 
+  KWD: 0.0043, // 1 INR = 0.0043 Kuwaiti dinar 
+  KYD: 0.012, // 1 INR = 0.012 Cayman Islands dollar 
+  KZT: 7.4, // 1 INR = 7.4 Kazakhstani tenge 
+  LAK: 158, // 1 INR = 158 Lao kip 
+  LBP: 22, // 1 INR = 22 Lebanese pound 
+  LKR: 2.4, // 1 INR = 2.4 Sri Lankan rupee 
+  LRD: 2.1, // 1 INR = 2.1 Liberian dollar 
+  LSL: 1.7, // 1 INR = 1.7 Lesotho loti 
+  LYD: 0.019, // 1 INR = 0.019 Libyan dinar 
+  MAD: 0.14, // 1 INR = 0.14 Moroccan dirham 
+  MDL: 0.24, // 1 INR = 0.24 Moldovan leu 
+  MGA: 40, // 1 INR = 40 Malagasy ariary 
+  MKD: 0.73, // 1 INR = 0.73 Macedonian denar 
+  MMK: 22, // 1 INR = 22 Burmese kyat 
+  MNT: 40, // 1 INR = 40 Mongolian tögrög 
+
+  MOP: 0.11, // 1 INR = 0.11 Macanese pataca 
+  MRO: 5.6, // 1 INR = 5.6 Mauritanian ouguiya 
+  MUR: 1.9, // 1 INR = 1.9 Mauritian rupee 
+  MVR: 0.27, // 1 INR = 0.27 Maldivian rufiyaa 
+  MWK: 9.4, // 1 INR = 9.4 Malawian kwacha 
+  MXN: 0.38, // 1 INR = 0.38 Mexican peso 
+  MYR: 0.053, // 1 INR = 0.053 Malaysian ringgit 
+  MZN: 2.5, // 1 INR = 2.5 Mozambican metical 
+  NAD: 1.7, // 1 INR = 1.7 Namibian dollar 
+  NGN: 5.6, // 1 INR = 5.6 Nigerian naira 
+  NIO: 0.42, // 1 INR = 0.42 Nicaraguan córdoba 
+  NOK: 0.12, // 1 INR = 0.12 Norwegian krone 
+  NPR: 1.6, // 1 INR = 1.6 Nepalese rupee 
+  NZD: 0.019, // 1 INR = 0.019 New Zealand dollar 
+  OMR: 0.0057, // 1 INR = 0.0057 Omani rial 
+  PAB: 0.014, // 1 INR = 0.014 Panamanian balboa 
+
+  PEN: 0.045, // 1 INR = 0.045 Peruvian sol 
+  PGK: 0.051, // 1 INR = 0.051 Papua New Guinean kina 
+  PHP: 0.8, // 1 INR = 0.8 Philippine peso 
+  PKR: 1, // 1 INR = 1 Pakistani rupee 
+  PLN: 0.056, // 1 INR = 0.056 Polish złoty 
+  PYG: 10, // 1 INR = 10 Paraguayan guaraní 
+  QAR: 0.051, // 1 INR = 0.051 Qatari riyal 
+  RON: 0.058, // 1 INR = 0.058 Romanian leu 
+  RSD: 1.7, // 1 INR = 1.7 Serbian dinar 
+  RUB: 1.4, // 1 INR = 1.4 Russian ruble 
+  RWF: 14, // 1 INR = 14 Rwandan franc 
+  SAR: 0.052, // 1 INR = 0.052 Saudi riyal 
+  SBD: 0.12, // 1 INR = 0.12 Solomon Islands dollar 
+  SCR: 1.6, // 1 INR = 1.6 Seychellois rupee 
+  SDG: 6, // 1 INR = 6 Sudanese pound 
+  SEK: 0.12, // 1 INR = 0.12 Swedish krona 
+  SGD: 0.018, // 1 INR = 0.018 Singapore dollar 
+  SHP: 0.0092, // 1 INR = 0.0092 Saint Helena pound 
+  SLL: 130, // 1 INR = 130 Sierra Leonean leone 
+  SOS: 2.1, // 1 INR = 2.1 Somali shilling 
+
+  SRD: 0.093, // 1 INR = 0.093 Surinamese dollar 
+  SSP: 1, // 1 INR = 1 South Sudanese pound 
+  STN: 0.26, // 1 INR = 0.26 São Tomé and Príncipe dobra 
+  SYP: 18, // 1 INR = 18 Syrian pound 
+  SZL: 1.7, // 1 INR = 1.7 Swazi lilangeni 
+
+  THB: 0.44, // 1 INR = 0.44 Thai baht 
+  TJS: 0.25, // 1 INR = 0.25 Tajikistani somoni 
+  TMT: 0.049, // 1 INR = 0.049 Turkmenistan manat 
+  TND: 0.038, // 1 INR = 0.038 Tunisian dinar 
+  TOP: 0.031, // 1 INR = 0.031 Tongan paʻanga 
+  TRY: 0.17, // 1 INR = 0.17 Turkish lira 
+  TTD: 0.094, // 1 INR = 0.094 Trinidad and Tobago dollar 
+  TWD: 0.38, // 1 INR = 0.38 New Taiwan dollar   
+TZS: 31, // 1 INR = 31 Tanzanian shilling 
+
+  UAH: 0.37, // 1 INR = 0.37 Ukrainian hryvnia 
+  UGX: 55, // 1 INR = 55 Ugandan shilling 
+
+  USD: 0.014, // 1 INR = 0.014 United States dollar 
+  UYU: 0.61, // 1 INR = 0.61 Uruguayan peso 
+  UZS: 135, // 1 INR = 135 Uzbekistani soʻm   
+VES: 186, // 1 INR = 186 Venezuelan bolívar 
+  VND: 323, // 1 INR = 323 Vietnamese đồng 
+  VUV: 1.5, // 1 INR = 1.5 Vanuatu vatu 
+  WST: 0.036, // 1 INR = 0.036 Samoan tālā 
+  XAF: 7.5, // 1 INR = 7.5 Central African CFA franc 
+  XCD: 0.038, // 1 INR = 0.038 Eastern Caribbean dollar 
+  XDR: 0.01, // 1 INR = 0.01 Special drawing rights 
+  XOF: 7.5, // 1 INR = 7.5 West African CFA franc 
+  XPF: 1.4, // 1 INR = 1.4 CFP franc 
+  YER: 3.5, // 1 INR = 3.5 Yemeni rial 
+  ZAR: 1.7, // 1 INR = 1.7 South African rand 
+  ZMW: 0.26 // 1 INR = 0.26 Zambian kwacha            
+};
+var conversionRate = currencies[to];
+
+// Calculate converted amount
+var convertedAmount = value * conversionRate;
+
+// Display result
+document.getElementById('result').innerText = value + ' INR is equal to ' + convertedAmount.toFixed(2) + ' ' + to;
+}
+    </script>
+</body>
+</html>
+
+"""
+if __name__ == '__main__':
+    app.run(port = 9000)
