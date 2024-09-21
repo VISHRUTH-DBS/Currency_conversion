@@ -1,4 +1,10 @@
-<!DOCTYPE html>
+from flask import Flask, render_template
+
+app = Flask(_name_)
+
+@app.route('/')  
+def home():
+    return """<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -449,4 +455,6 @@ document.getElementById('result').innerText = value + ' INR is equal to ' + conv
 </body>
 </html>
 
-
+"""
+if _name_ == '_main_':
+    app.run(port = 9000)
